@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head><title>Cogniva Test</title></head>
+<body style="font-family: sans-serif; text-align: center; padding: 50px;">
+  <h1>Cogniva Voice Test</h1>
+  <button id="recordBtn" style="font-size: 20px; padding: 20px;">🎤 Hold to Talk</button>
+  <p id="status">Idle</p>
+  <p id="transcript"></p>
+  <p id="reply"></p>
+  <audio id="player" controls style="margin-top:20px;"></audio>
+
+  <script>
+    const sessionId = "web_test_user";
+    let mediaRecorder;
+    let chunks = [];
+    const btn = document.getElementById("recordBtn");
+    const status = document.getElementById("status");
+
+    btn.onmousedown = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      chunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+      mediaRecorder.start();
+      status.textContent = "Recording... (release to send)";
+    };
+
+    btn.onmouseup = async () => {
+      mediaRecorder.stop();
+      status.textContent = "Processing...";
+
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        const formData = new FormData();
+        formData.append("audio", blob, "recording.webm");
+        formData.append("transcript", "");
+        formData.append("locale", "en-US");
+        formData.append("route", "/");
+        formData.append("sessionId", sessionId);
+
+        const res = await fetch("http://localhost:8001/voice-turn", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+
+        document.getElementById("reply").textContent = "Agent: " + data.replyText;
+        const player = document.getElementById("player");
+        player.src = data.replyAudioUrl;
+        player.play();
+
+        status.textContent = "Idle";
+      };
+    };
+  </script>
+</body>
+</html>

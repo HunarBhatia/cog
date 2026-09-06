@@ -1,0 +1,137 @@
+[
+  {
+    "timestamp": "2026-09-01T10:30:00Z",
+    "domain": "memory",
+    "level": 3,
+    "result": 1,
+    "score": 70,
+    "theta_old": -1.2,
+    "theta_new": -0.95
+  },
+  {
+    "timestamp": "2026-09-02T11:15:00Z",
+    "domain": "daily_routine",
+    "level": 4,
+    "result": 1,
+    "score": 78,
+    "theta_old": -0.4,
+    "theta_new": -0.15
+  },
+  {
+    "timestamp": "2026-09-03T15:00:00Z",
+    "domain": "attention",
+    "level": 4,
+    "result": 1,
+    "score": 75,
+    "theta_old": -0.3,
+    "theta_new": -0.1
+  },
+  {
+    "timestamp": "2026-09-04T10:00:00Z",
+    "domain": "memory",
+    "level": 4,
+    "result": 0,
+    "score": 45,
+    "theta_old": -0.7,
+    "theta_new": -0.85
+  },
+  {
+    "timestamp": "2026-09-05T09:45:00Z",
+    "domain": "daily_routine",
+    "level": 5,
+    "result": 1,
+    "score": 88,
+    "theta_old": 0,
+    "theta_new": 0.26
+  },
+  {
+    "timestamp": "2026-09-05T14:30:00Z",
+    "domain": "attention",
+    "level": 5,
+    "result": 1,
+    "score": 82,
+    "theta_old": -0.1,
+    "theta_new": -0.03
+  },
+  {
+    "timestamp": "2026-09-05T18:00:00Z",
+    "domain": "pattern_recognition",
+    "level": 8,
+    "result": 1,
+    "score": 92,
+    "theta_old": 2,
+    "theta_new": 2.23
+  },
+  {
+    "timestamp": "2026-09-05T20:00:00Z",
+    "domain": "emotional",
+    "level": 8,
+    "result": 1,
+    "score": 95,
+    "theta_old": 2.05,
+    "theta_new": 2.23
+  },
+  {
+    "timestamp": "2026-09-06T00:59:51.300Z",
+    "domain": "memory",
+    "level": 4,
+    "result": 1,
+    "score": 16,
+    "theta_old": -0.7883,
+    "theta_new": -0.6459
+  },
+  {
+    "timestamp": "2026-09-06T01:01:06.131Z",
+    "domain": "memory",
+    "level": 5,
+    "result": 1,
+    "score": 13,
+    "theta_old": -0.6459,
+    "theta_new": -0.4662
+  },
+  {
+    "timestamp": "2026-09-06T02:31:11.206Z",
+    "domain": "memory",
+    "level": 5,
+    "result": 1,
+    "score": 27,
+    "theta_old": -0.4662,
+    "theta_new": -0.2823
+  },
+  {
+    "timestamp": "2026-09-06T02:32:14.617Z",
+    "domain": "memory",
+    "level": 5,
+    "result": 1,
+    "score": 20,
+    "theta_old": -0.2823,
+    "theta_new": -0.1225
+  },
+  {
+    "timestamp": "2026-09-06T02:38:12.096Z",
+    "domain": "attention",
+    "level": 5,
+    "result": 1,
+    "score": 100,
+    "theta_old": -0.0341,
+    "theta_new": 0.1873
+  },
+  {
+    "timestamp": "2026-09-06T02:39:01.234Z",
+    "domain": "attention",
+    "level": 6,
+    "result": 1,
+    "score": 60,
+    "theta_old": 0.1873,
+    "theta_new": 0.4148
+  },
+  {
+    "timestamp": "2026-09-06T02:39:28.248Z",
+    "domain": "attention",
+    "level": 6,
+    "result": 1,
+    "score": 65,
+    "theta_old": 0.4148,
+    "theta_new": 0.6239
+  }
+]

@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Folk border pattern matching Cogniva aesthetics */
+.folk-border-pattern {
+  background-color: #f7f4ed;
+  background-image: 
+    repeating-linear-gradient(45deg, #a6322b 0, #a6322b 6px, transparent 6px, transparent 12px),
+    repeating-linear-gradient(-45deg, #a6322b 0, #a6322b 6px, transparent 6px, transparent 12px),
+    radial-gradient(#184735 2px, transparent 3px);
+  background-size: 24px 24px, 24px 24px, 12px 12px;
+  border-right: 3px solid #8e2b24;
+  opacity: 0.85;
+}
+
+.folk-border-right {
+  border-right: none;
+  border-left: 3px solid #8e2b24;
+}
+
+/* Keyframes for soothing companion animations */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(0.6deg);
+  }
+}
+
+@keyframes waveArm {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(14deg);
+  }
+}
+
+.animate-mascot-bob {
+  animation: floatGentle 5s ease-in-out infinite;
+}
+
+.animate-wave-arm {
+  animation: waveArm 3s ease-in-out infinite;
+}
+
+/* Persistent Floating Voice Mascot */
+.mascot,
+.mascot-container {
+  position: fixed;
+  z-index: 50;
+  cursor: pointer;
+  transition: all 600ms ease-in-out;
+  will-change: transform, left, top, bottom, right, width, height;
+}
+
+.mascot-home,
+.mascot-welcome {
+  width: 360px;
+  height: 360px;
+  left: 50%;
+  top: 65px;
+  bottom: auto;
+  right: auto;
+  transform: translateX(-50%);
+}
+
+@media (min-width: 640px) {
+  .mascot-home,
+  .mascot-welcome {
+    width: 440px;
+    height: 440px;
+    top: 50px;
+  }
+}
+
+.mascot-corner {
+  width: 150px;
+  height: 150px;
+  right: 20px;
+  bottom: 20px;
+  left: auto;
+  top: auto;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .mascot-corner {
+    width: 120px;
+    height: 120px;
+    right: 12px;
+    bottom: 12px;
+  }
+}
+

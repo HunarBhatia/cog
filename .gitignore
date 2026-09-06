@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+*/node_modules/
+.pnp
+.pnp.js
+
+# Python virtualenvs & cache
+.venv/
+*/.venv/
+venv/
+*/venv/
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*.py[cod]
+*$py.class
+
+# Next.js
+.next/
+*/.next/
+out/
+build/
+dist/
+
+# Environment files
+.env
+.env*
+.env.local
+.env.*.local
+*.env
+**/.env
+**/.env.*
+**/.env.local
+**/.env.*.local
+!**/.env.example
+!*.env.example
+
+# Local SQLite databases & temporary audio outputs
+*.sqlite3
+*/checkpoints.db
+checkpoints.db
+audio_out/
+*/audio_out/
+test_*.mp3
+output.mp3
+
+# Logs & OS artifacts
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+.venv-win
+.npm-cache

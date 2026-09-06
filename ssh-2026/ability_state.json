@@ -1,0 +1,17 @@
+{
+  "memory": {
+    "theta": -0.12250566064765661
+  },
+  "attention": {
+    "theta": 0.6238937465807889
+  },
+  "pattern_recognition": {
+    "theta": 2.2306948165962988
+  },
+  "daily_routine": {
+    "theta": 0.26067701603085003
+  },
+  "emotional": {
+    "theta": 2.2306948165962988
+  }
+}

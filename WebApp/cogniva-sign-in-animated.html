@@ -1,0 +1,469 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cogniva - Good Days, Brighter Tomorrows</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              darkGreen: '#1d5541',
+              forest: '#184735',
+              terracotta: '#c25e43',
+              gold: '#d99a26',
+              bgLight: '#fcfaf6',
+              borderLight: '#e4dfd5'
+            }
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'Georgia', 'serif'],
+            script: ['Caveat', 'Playpen Sans', 'cursive', 'sans-serif'],
+            sans: ['Inter', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&amp;display=swap" rel="stylesheet">
+<style data-purpose="ethnic-patterns">
+    /* Traditional Folk / Handloom woven motif patterns */
+    .folk-border-pattern {
+      background-color: #f7f4ed;
+      background-image: 
+        repeating-linear-gradient(45deg, #a6322b 0, #a6322b 6px, transparent 6px, transparent 12px),
+        repeating-linear-gradient(-45deg, #a6322b 0, #a6322b 6px, transparent 6px, transparent 12px),
+        radial-gradient(#184735 2px, transparent 3px);
+      background-size: 24px 24px, 24px 24px, 12px 12px;
+      border-right: 3px solid #8e2b24;
+      opacity: 0.85;
+    }
+    .folk-border-right {
+      border-right: none;
+      border-left: 3px solid #8e2b24;
+    }
+  </style>
+<style data-purpose="custom-typography-and-decor">
+    .font-handwriting {
+      font-family: 'Caveat', cursive;
+    }
+    .font-main-serif {
+      font-family: 'Playfair Display', Georgia, serif;
+    }
+    /* Soft watercolor mist effect overlay */
+    .watercolor-vignette {
+      background: radial-gradient(circle at 50% 35%, rgba(254, 252, 248, 0.94) 0%, rgba(254, 252, 248, 0.82) 45%, rgba(254, 252, 248, 0.2) 80%);
+    }
+
+    /* Keyframes for Gentle, Calming Animations */
+    @keyframes floatGentle {
+      0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-7px) rotate(0.8deg);
+      }
+    }
+
+    @keyframes waveArm {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      50% {
+        transform: rotate(14deg);
+      }
+    }
+
+    @keyframes earWiggleLeft {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      30% {
+        transform: rotate(-6deg);
+      }
+      60% {
+        transform: rotate(3deg);
+      }
+    }
+
+    @keyframes earWiggleRight {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      30% {
+        transform: rotate(6deg);
+      }
+      60% {
+        transform: rotate(-3deg);
+      }
+    }
+
+    @keyframes ambientSunGlow {
+      0%, 100% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.6;
+      }
+      50% {
+        transform: scale(1.1) translate(-8px, -6px);
+        opacity: 0.78;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes leafSway {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      50% {
+        transform: rotate(-4deg) translateY(-2px);
+      }
+    }
+
+    .animate-mascot-bob {
+      animation: floatGentle 4.8s ease-in-out infinite;
+    }
+
+    .animate-wave-arm {
+      transform-origin: 80px 75px;
+      animation: waveArm 2.8s ease-in-out infinite;
+    }
+
+    .group:hover .animate-wave-arm,
+    .mascot-container:hover .animate-wave-arm {
+      animation: waveArm 1.1s ease-in-out infinite;
+    }
+
+    .mascot-container:hover .ear-left {
+      transform-origin: 38px 44px;
+      animation: earWiggleLeft 0.8s ease-in-out infinite;
+    }
+
+    .mascot-container:hover .ear-right {
+      transform-origin: 82px 44px;
+      animation: earWiggleRight 0.8s ease-in-out infinite;
+    }
+
+    .animate-sun-drift {
+      animation: ambientSunGlow 12s ease-in-out infinite;
+    }
+
+    .animate-leaf-left {
+      transform-origin: bottom center;
+      animation: leafSway 6s ease-in-out infinite alternate;
+    }
+
+    .animate-leaf-right {
+      transform-origin: bottom center;
+      animation: leafSway 6.5s ease-in-out infinite alternate-reverse;
+    }
+
+    .fade-in-hero {
+      animation: fadeInUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .fade-in-cards {
+      animation: fadeInUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.18s forwards;
+      opacity: 0;
+    }
+
+    /* Accessibility: Respect Reduced Motion Preference */
+    @media (prefers-reduced-motion: reduce) {
+      .animate-mascot-bob,
+      .animate-wave-arm,
+      .animate-sun-drift,
+      .animate-leaf-left,
+      .animate-leaf-right,
+      .fade-in-hero,
+      .fade-in-cards,
+      .mascot-container:hover .animate-wave-arm,
+      .mascot-container:hover .ear-left,
+      .mascot-container:hover .ear-right {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#f7f5ef] text-[#1c2e28] font-sans antialiased relative min-h-screen overflow-x-hidden flex flex-col justify-between select-none">
+<!-- BEGIN: Folk Ethnic Side Accents -->
+<!-- Left ethnic woven ribbon -->
+<div aria-hidden="true" class="absolute left-0 top-0 w-8 md:w-11 h-64 pointer-events-none z-20 folk-border-pattern shadow-sm"></div>
+<!-- Right ethnic woven ribbon -->
+<div aria-hidden="true" class="absolute right-0 top-0 w-8 md:w-11 h-64 pointer-events-none z-20 folk-border-pattern folk-border-right shadow-sm"></div>
+<!-- END: Folk Ethnic Side Accents -->
+<!-- BEGIN: Scenic Watercolor Illustration Background -->
+<!-- Layered scenic landscape representing mountains, river, tropical foliage, and stilt cottage -->
+<div aria-hidden="true" class="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+<!-- Gentle warm sky with soft sun -->
+<div class="absolute inset-0 bg-gradient-to-b from-[#fbf8f0] via-[#f7f3e8] to-[#dce7de]"></div>
+<div class="absolute right-[14%] bottom-[28%] w-32 h-32 rounded-full bg-[#fbd4a6]/60 blur-[1px] animate-sun-drift transition-all duration-1000"></div>
+<!-- Soft mountains & river horizon backdrop vector -->
+<svg class="absolute bottom-16 w-full h-[55%] min-w-[1280px] object-cover opacity-60" fill="none" preserveAspectRatio="none" viewBox="0 0 1600 500">
+<!-- Distant Hills -->
+<path d="M0 320 C300 240, 500 290, 800 220 C1100 150, 1350 250, 1600 190 L1600 500 L0 500 Z" fill="#b9cbbe" opacity="0.6"></path>
+<path d="M0 360 C350 300, 600 340, 950 270 C1250 220, 1450 310, 1600 280 L1600 500 L0 500 Z" fill="#a4baa9" opacity="0.75"></path>
+<!-- River / Lake Calm Water Body -->
+<path d="M0 400 Q400 375, 800 385 T1600 375 L1600 500 L0 500 Z" fill="#d2e3dc"></path>
+<!-- Stilt House Cottage on Left Water Shore -->
+<g fill="#e8eee9" opacity="0.85" stroke="#617466" stroke-width="2.5">
+<path d="M-10 320 L70 270 L110 320 Z"></path>
+<rect height="60" width="100" x="0" y="320"></rect>
+<!-- Stilts -->
+<line x1="15" x2="15" y1="380" y2="440"></line>
+<line x1="40" x2="40" y1="380" y2="435"></line>
+<line x1="70" x2="70" y1="380" y2="438"></line>
+<line x1="90" x2="90" y1="380" y2="430"></line>
+<line x1="10" x2="95" y1="410" y2="410"></line>
+</g>
+<!-- Shore foliage silhouettes -->
+<path d="M0 430 C120 420, 240 435, 340 445 C280 410, 200 395, 140 420 Z" fill="#758f7e"></path>
+<circle cx="50" cy="380" fill="#698574" opacity="0.7" r="30"></circle>
+<circle cx="110" cy="390" fill="#587563" opacity="0.8" r="45"></circle>
+</svg>
+<!-- Radial readability wash over center text -->
+<div class="absolute inset-0 watercolor-vignette"></div>
+</div>
+<!-- END: Scenic Watercolor Illustration Background -->
+<!-- BEGIN: Top Navigation Header -->
+<header class="relative z-10 w-full px-8 md:px-14 pt-6 pb-2 flex items-center justify-between">
+<!-- Brand Logo -->
+<div class="flex items-center space-x-3.5 group cursor-pointer" data-purpose="brand-identity">
+<!-- Rounded Leaf Icon -->
+<div class="w-12 h-12 rounded-2xl bg-brand-darkGreen flex items-center justify-center shadow-md transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:bg-brand-forest">
+<svg class="w-7 h-7 text-white transition-transform duration-300 group-hover:rotate-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+<path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+</svg>
+</div>
+<div>
+<h1 class="text-2xl font-bold tracking-tight text-brand-darkGreen font-main-serif leading-none transition-colors duration-200 group-hover:text-emerald-950">Cogniva</h1>
+<p class="text-xs text-stone-600 font-medium tracking-wide mt-1">Good Days, Brighter Tomorrows</p>
+</div>
+</div>
+<!-- Header Action Buttons -->
+<div class="flex items-center space-x-3" data-purpose="accessibility-actions">
+<!-- Read Aloud Button -->
+<button class="group inline-flex items-center space-x-2 px-5 py-2.5 rounded-full border border-stone-300 hover:border-brand-darkGreen/50 bg-white/90 hover:bg-white text-stone-800 hover:text-brand-darkGreen text-sm font-semibold tracking-tight shadow-sm hover:shadow-md active:scale-95 transition-all duration-200" type="button">
+<svg class="w-4 h-4 text-brand-darkGreen transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+<path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+<path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+</svg>
+<span class="transition-colors duration-200">Read Aloud</span>
+</button>
+<!-- Help & Support Button -->
+<button class="group inline-flex items-center space-x-2 px-5 py-2.5 rounded-full border border-stone-300 hover:border-brand-darkGreen/50 bg-white/90 hover:bg-white text-stone-800 hover:text-brand-darkGreen text-sm font-semibold tracking-tight shadow-sm hover:shadow-md active:scale-95 transition-all duration-200" type="button">
+<svg class="w-4 h-4 text-brand-darkGreen transition-transform duration-200 group-hover:scale-110 group-hover:rotate-12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
+<span class="transition-colors duration-200">Help &amp; Support</span>
+</button>
+</div>
+</header>
+<!-- END: Top Navigation Header -->
+<!-- BEGIN: Main Hero Section -->
+<main class="relative z-10 w-full max-w-7xl mx-auto px-6 pt-2 pb-6 flex-grow flex flex-col items-center justify-center text-center fade-in-hero">
+<!-- Hand-drawn style note on Left side -->
+<div class="absolute left-10 md:left-20 top-20 text-left hidden lg:block transition-transform duration-300 hover:rotate-[-4deg] cursor-default select-none" data-purpose="reminiscence-badge">
+<div class="font-handwriting text-[#523d35] text-3xl leading-snug transform -rotate-6">
+        Familiar<br>
+        stories.<br>
+        Brighter<br>
+        days.
+      </div>
+<!-- Terracotta organic hand-drawn underline accent -->
+<svg class="w-24 h-4 mt-1 -rotate-3" fill="none" viewBox="0 0 100 15">
+<path d="M2 10 Q50 2, 98 11" stroke="#c25e43" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+<!-- Editorial Vertical Text & Diamond Folk Ornament on Right Side -->
+<div class="absolute right-10 md:right-16 top-24 hidden lg:flex flex-col items-center tracking-[0.26em] text-[11px] font-semibold text-stone-600 leading-6 uppercase transition-transform duration-300 hover:translate-y-[-2px] cursor-default select-none" data-purpose="editorial-accent">
+<span>Our</span>
+<span>People</span>
+<span class="mt-1">Our</span>
+<span>Stories</span>
+<span class="mt-1">Always</span>
+<span>With Us</span>
+<!-- Ethnic Folk Diamond Motif SVG -->
+<div class="mt-4 text-[#bf4332] transition-transform duration-300 hover:scale-110">
+<svg class="w-14 h-9" fill="currentColor" viewBox="0 0 80 40">
+<path d="M40 5 L55 20 L40 35 L25 20 Z"></path>
+<path d="M15 10 L25 20 L15 30 L5 20 Z" opacity="0.7"></path>
+<path d="M65 10 L75 20 L65 30 L55 20 Z" opacity="0.7"></path>
+<circle cx="40" cy="20" fill="#fcfaf6" r="3.5"></circle>
+<circle cx="15" cy="20" fill="#fcfaf6" r="2"></circle>
+<circle cx="65" cy="20" fill="#fcfaf6" r="2"></circle>
+</svg>
+</div>
+</div>
+<!-- Friendly Mascot Halo Container -->
+<div class="relative mb-3 flex items-center justify-center mascot-container group cursor-pointer" data-purpose="character-mascot">
+<!-- Mascot circular background warmth -->
+<div class="w-32 h-32 md:w-36 md:h-36 rounded-full bg-[#fdecdb]/85 flex items-center justify-center relative shadow-inner animate-mascot-bob transition-all duration-300 group-hover:scale-105 group-hover:bg-[#fde5cf]">
+<!-- Botanical decorative sprigs -->
+<svg class="absolute -left-5 bottom-2 w-8 h-12 text-[#567463] animate-leaf-left transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 30 50">
+<path d="M15 48 Q10 25 28 8"></path>
+<ellipse cx="23" cy="12" fill="#567463" rx="5" ry="3" transform="rotate(-30 23 12)"></ellipse>
+<ellipse cx="14" cy="24" fill="#567463" rx="5" ry="3" transform="rotate(-40 14 24)"></ellipse>
+<ellipse cx="8" cy="36" fill="#567463" rx="4" ry="2.5" transform="rotate(-20 8 36)"></ellipse>
+</svg>
+<svg class="absolute -right-5 bottom-3 w-8 h-12 text-[#567463] animate-leaf-right transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 30 50">
+<path d="M15 48 Q20 25 2 8"></path>
+<ellipse cx="7" cy="12" fill="#567463" rx="5" ry="3" transform="rotate(30 7 12)"></ellipse>
+<ellipse cx="16" cy="24" fill="#567463" rx="5" ry="3" transform="rotate(40 16 24)"></ellipse>
+<ellipse cx="22" cy="36" fill="#567463" rx="4" ry="2.5" transform="rotate(20 22 36)"></ellipse>
+</svg>
+<!-- Cute Purple Animal Character (Waving friendly) -->
+<svg class="w-24 h-24 md:w-28 md:h-28 text-[#7752b5] transition-transform duration-300 group-hover:scale-105" fill="none" viewBox="0 0 120 120">
+<!-- Ears (with subtle wiggle classes) -->
+<g class="ear-left transition-transform duration-200">
+<polygon fill="#7550b3" points="38,44 26,18 52,32" stroke="#5d3999" stroke-width="2"></polygon>
+<polygon fill="#e79fb8" points="38,40 32,24 48,34"></polygon>
+</g>
+<g class="ear-right transition-transform duration-200">
+<polygon fill="#7550b3" points="82,44 94,18 68,32" stroke="#5d3999" stroke-width="2"></polygon>
+<polygon fill="#e79fb8" points="82,40 88,24 72,34"></polygon>
+</g>
+<!-- Body -->
+<ellipse cx="60" cy="85" fill="#7550b3" rx="28" ry="24"></ellipse>
+<ellipse cx="60" cy="88" fill="#8f6bca" rx="17" ry="15"></ellipse>
+<!-- Feet -->
+<ellipse cx="46" cy="108" fill="#6743a6" rx="10" ry="7"></ellipse>
+<ellipse cx="74" cy="108" fill="#6743a6" rx="10" ry="7"></ellipse>
+<!-- Left arm down -->
+<path d="M36 78 C28 84 28 94 34 98 C38 100 42 96 40 88 Z" fill="#7550b3"></path>
+<!-- Right arm waving up (animated wave) -->
+<g class="animate-wave-arm">
+<path d="M83 76 C94 70 106 58 108 48 C109 43 103 40 98 44 C92 50 86 64 78 72 Z" fill="#7550b3"></path>
+<!-- Joy waving rays near hand -->
+<line stroke="#d96e38" stroke-linecap="round" stroke-width="2.5" x1="106" x2="114" y1="36" y2="30"></line>
+<line stroke="#d96e38" stroke-linecap="round" stroke-width="2.5" x1="112" x2="120" y1="46" y2="44"></line>
+</g>
+<!-- Head -->
+<circle cx="60" cy="52" fill="#805bbf" r="28" stroke="#6842a6" stroke-width="2"></circle>
+<!-- Cheeks blush -->
+<ellipse cx="44" cy="58" fill="#e89bb0" opacity="0.8" rx="5" ry="3"></ellipse>
+<ellipse cx="76" cy="58" fill="#e89bb0" opacity="0.8" rx="5" ry="3"></ellipse>
+<!-- Eyes -->
+<ellipse cx="47" cy="50" fill="#1e1830" rx="3.5" ry="4.5"></ellipse>
+<circle cx="48.5" cy="48.5" fill="#ffffff" r="1.5"></circle>
+<ellipse cx="73" cy="50" fill="#1e1830" rx="3.5" ry="4.5"></ellipse>
+<circle cx="74.5" cy="48.5" fill="#ffffff" r="1.5"></circle>
+<!-- Nose & Smile -->
+<path d="M58 56 L62 56 L60 58 Z" fill="#301f4a"></path>
+<path d="M54 60 Q60 67 66 60" fill="none" stroke="#301f4a" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Main Title Heading -->
+<div class="relative max-w-4xl mx-auto px-2">
+<h2 class="font-main-serif text-4xl sm:text-5xl md:text-[3.4rem] font-bold text-brand-forest tracking-tight leading-[1.18]">
+        A gentle day,<br>rooted in familiar memories.
+      </h2>
+<!-- Warm terracotta curved hand-drawn underline accent -->
+<div class="w-full flex justify-center -mt-1 md:-mt-0 mb-4">
+<svg class="w-72 md:w-96 h-4 transition-transform duration-300 hover:scale-105" fill="none" viewBox="0 0 350 16">
+<path d="M5 9 C90 15, 230 4, 345 10" stroke="#c25e43" stroke-linecap="round" stroke-width="4.5"></path>
+</svg>
+</div>
+<!-- Subtitle Description -->
+<p class="text-base sm:text-lg md:text-xl text-stone-700 font-normal max-w-2xl mx-auto leading-relaxed">
+        Interactive daily care, joyful memories, and calm activities tailored for you.
+      </p>
+</div>
+<!-- Persona Action CTA Buttons -->
+<div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-lg" data-purpose="user-role-selection">
+<!-- Martha Primary Button -->
+<button onclick="window.location.href='daily-companion-home.html'" class="group w-full sm:w-auto min-w-[230px] flex items-center justify-center space-x-3 bg-brand-darkGreen hover:bg-brand-forest text-white py-4 px-8 rounded-full shadow-lg hover:shadow-2xl hover:shadow-brand-darkGreen/30 transition-all duration-200 transform hover:-translate-y-1 hover:scale-[1.02] active:scale-95 active:translate-y-0" type="button">
+<svg class="w-6 h-6 text-emerald-200 transition-transform duration-200 group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+</svg>
+<span class="text-xl font-bold font-main-serif">I'm Martha</span>
+<span class="text-2xl font-bold ml-1 leading-none inline-block transition-transform duration-200 group-hover:translate-x-1.5">→</span>
+</button>
+<!-- Caregiver Secondary Button -->
+<button onclick="window.location.href='daily-companion-folk.html'" class="group w-full sm:w-auto min-w-[230px] flex items-center justify-center space-x-3 bg-[#eef3ec] hover:bg-[#e4ede1] border-2 border-stone-400/60 hover:border-brand-darkGreen/60 text-brand-darkGreen py-4 px-8 rounded-full shadow-md hover:shadow-xl hover:shadow-stone-300/60 transition-all duration-200 transform hover:-translate-y-1 hover:scale-[1.02] active:scale-95 active:translate-y-0" type="button">
+<svg class="w-6 h-6 text-brand-darkGreen transition-transform duration-200 group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+</svg>
+<span class="text-xl font-bold font-main-serif">I'm a Caregiver</span>
+</button>
+</div>
+</main>
+<!-- END: Main Hero Section -->
+<!-- BEGIN: Bottom Feature Navigation Card -->
+<footer class="relative z-10 w-full px-4 sm:px-8 md:px-12 pb-6 max-w-7xl mx-auto fade-in-cards">
+<div class="bg-white/95 backdrop-blur-md rounded-3xl border border-stone-200/90 shadow-xl shadow-stone-300/40 p-3 sm:p-5 md:py-6" data-purpose="bottom-activity-dock">
+<div class="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-stone-200">
+<!-- Tab 1: Memory Games -->
+<a class="group flex flex-col items-center justify-center text-center p-3 sm:p-4 hover:bg-stone-50/90 rounded-2xl transition-all duration-200 transform hover:-translate-y-1 hover:shadow-sm" href="arcade-games.html">
+<!-- Gamepad Icon (Green) -->
+<div class="mb-2 text-brand-darkGreen group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-200">
+<svg class="w-10 h-10 sm:w-11 sm:h-11" fill="currentColor" viewBox="0 0 24 24">
+<path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"></path>
+</svg>
+</div>
+<h3 class="font-main-serif font-bold text-lg sm:text-xl text-stone-900 group-hover:text-brand-darkGreen transition-colors duration-200">
+            Memory Games
+          </h3>
+</a>
+<!-- Tab 2: Daily Reminiscence -->
+<a class="group flex flex-col items-center justify-center text-center p-3 sm:p-4 hover:bg-stone-50/90 rounded-2xl transition-all duration-200 transform hover:-translate-y-1 hover:shadow-sm" href="daily-companion-home.html">
+<!-- Open Book Icon (Terracotta) -->
+<div class="mb-2 text-brand-terracotta group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-200">
+<svg class="w-10 h-10 sm:w-11 sm:h-11" fill="currentColor" viewBox="0 0 24 24">
+<path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"></path>
+</svg>
+</div>
+<h3 class="font-main-serif font-bold text-lg sm:text-xl text-stone-900 group-hover:text-brand-terracotta transition-colors duration-200">
+            Daily Reminiscence
+          </h3>
+</a>
+<!-- Tab 3: Music & Radio -->
+<a class="group flex flex-col items-center justify-center text-center p-3 sm:p-4 hover:bg-stone-50/90 rounded-2xl transition-all duration-200 transform hover:-translate-y-1 hover:shadow-sm" href="daily-companion-home.html">
+<!-- Musical Note Icon (Amber Gold) -->
+<div class="mb-2 text-brand-gold group-hover:scale-110 group-hover:rotate-6 transition-transform duration-200">
+<svg class="w-10 h-10 sm:w-11 sm:h-11" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path>
+</svg>
+</div>
+<h3 class="font-main-serif font-bold text-lg sm:text-xl text-stone-900 group-hover:text-brand-gold transition-colors duration-200">
+            Music &amp; Radio
+          </h3>
+</a>
+<!-- Tab 4: Family Connection -->
+<a class="group flex flex-col items-center justify-center text-center p-3 sm:p-4 hover:bg-stone-50/90 rounded-2xl transition-all duration-200 transform hover:-translate-y-1 hover:shadow-sm" href="daily-companion-folk.html">
+<!-- Family/Group People Icon (Green) -->
+<div class="mb-2 text-brand-darkGreen group-hover:scale-110 transition-transform duration-200">
+<svg class="w-10 h-10 sm:w-11 sm:h-11" fill="currentColor" viewBox="0 0 24 24">
+<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 3s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path>
+</svg>
+</div>
+<h3 class="font-main-serif font-bold text-lg sm:text-xl text-stone-900 group-hover:text-brand-darkGreen transition-colors duration-200">
+            Folk View / Caregiver
+          </h3>
+</a>
+</div>
+</div>
+</footer>
+<!-- END: Bottom Feature Navigation Card -->
+</body></html>
+

@@ -1,0 +1,563 @@
+/* =========================================================
+   MatchThePairs — Game Styles
+   Cogniva / SIH 2026 — Memory Domain Cognitive Game
+   ========================================================= */
+
+/* ── Root background ── */
+.game-bg {
+  min-height: 100vh;
+  background: linear-gradient(160deg, #f0fdf4 0%, #ecfdf5 40%, #f0f9ff 100%);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* ── Shell / card ── */
+.game-shell {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Header row ── */
+.game-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Patient card (left) */
+.patient-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #fff;
+  border: 1px solid #d1fae5;
+  border-radius: 1.25rem;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  justify-self: start;
+}
+
+.patient-avatar {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.patient-hello {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0;
+}
+
+.patient-note {
+  font-size: 0.72rem;
+  color: #6b7280;
+  margin: 0.15rem 0 0;
+}
+
+/* Wooden sign (centre) */
+.wooden-sign {
+  position: relative;
+  background: linear-gradient(135deg, #a16207 0%, #854d0e 60%, #713f12 100%);
+  color: #fef9c3;
+  border-radius: 1rem;
+  padding: 1rem 2rem 0.85rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(113,63,18,.35);
+  border: 3px solid #92400e;
+}
+
+.wooden-sign h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 2px rgba(0,0,0,.4);
+}
+
+.wooden-sign p {
+  margin: 0.25rem 0 0;
+  font-size: 0.72rem;
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+.sign-rope {
+  position: absolute;
+  top: -18px;
+  width: 3px;
+  height: 18px;
+  background: repeating-linear-gradient(
+    to bottom,
+    #92400e 0px,
+    #a16207 3px,
+    #92400e 6px
+  );
+  border-radius: 2px;
+}
+
+.sign-rope-left  { left: 24%;  }
+.sign-rope-right { right: 24%; }
+
+/* Level card (right) */
+.level-card {
+  background: #fff;
+  border: 1px solid #d1fae5;
+  border-radius: 1.25rem;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-self: end;
+  min-width: 150px;
+}
+
+.level-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #065f46;
+  margin: 0;
+  text-align: center;
+}
+
+.level-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stat-icon {
+  font-size: 1.1rem;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  color: #6b7280;
+  display: block;
+  line-height: 1;
+}
+
+.level-stat strong {
+  font-size: 0.9rem;
+  color: #111827;
+  display: block;
+  line-height: 1.2;
+}
+
+/* ── Assessment / result banners ── */
+.assessment-message {
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  border: 1.5px solid #6ee7b7;
+  border-radius: 1.25rem;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  animation: slideIn 0.4s ease;
+}
+
+.assessment-message h2 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #065f46;
+  margin: 0 0 0.35rem;
+}
+
+.assessment-message p {
+  font-size: 0.82rem;
+  color: #047857;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Timeout / fail banner */
+.result-banner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 1.25rem;
+  padding: 1rem 1.25rem;
+  animation: slideIn 0.35s ease;
+}
+
+.result-timeout {
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+  border: 1.5px solid #fdba74;
+}
+
+.result-win {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 1.5px solid #86efac;
+}
+
+.result-banner-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.result-banner h2 {
+  font-size: 1rem;
+  font-weight: 800;
+  margin: 0 0 0.25rem;
+}
+
+.result-timeout h2 { color: #9a3412; }
+.result-win h2     { color: #14532d; }
+
+.result-banner p {
+  font-size: 0.78rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.result-timeout p { color: #c2410c; }
+.result-win p     { color: #166534; }
+
+/* Theta direction badge colours */
+.irt-badge.theta-up {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #14532d;
+}
+
+.irt-badge.theta-down {
+  background: #fef9c3;
+  border-color: #fde047;
+  color: #713f12;
+}
+
+/* ── Timer countdown track ── */
+.timer-track {
+  height: 8px;
+  background: #f3f4f6;
+  border-radius: 99px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.07);
+}
+
+.timer-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  border-radius: 99px;
+  transition: width 0.9s linear, background 0.4s ease;
+}
+
+.timer-fill.timer-warning {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.timer-fill.timer-urgent {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+  animation: pulse-bar 0.6s ease-in-out infinite alternate;
+}
+
+/* Timer display text urgency */
+.timer-stat.timer-warning .timer-display {
+  color: #d97706;
+}
+
+.timer-stat.timer-urgent .timer-display {
+  color: #dc2626;
+  animation: pulse-text 0.5s ease-in-out infinite alternate;
+}
+
+/* Time limit badge */
+.time-limit-badge {
+  font-size: 0.65rem;
+  color: #9ca3af;
+  font-weight: 600;
+  text-align: center;
+  margin-top: -0.25rem;
+}
+
+/* ── Game board ── */
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+  padding: 1.25rem;
+  background: #fff;
+  border-radius: 1.5rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 24px rgba(0,0,0,.07);
+  transition: opacity 0.3s ease;
+}
+
+.board-disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* ── Memory card ── */
+.mem-card {
+  aspect-ratio: 1;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  perspective: 600px;
+  border-radius: 1rem;
+  transition: transform 0.15s ease;
+}
+
+.mem-card:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.04);
+}
+
+.mem-card:disabled {
+  cursor: default;
+}
+
+.mem-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 1rem;
+}
+
+.mem-card.is-flipped .mem-card-inner {
+  transform: rotateY(180deg);
+}
+
+.mem-card-back,
+.mem-card-front {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card back (hidden state) */
+.mem-card-back {
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+  border: 2px solid #047857;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.08);
+}
+
+.back-leaf {
+  font-size: 1.6rem;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.3));
+  opacity: 0.85;
+}
+
+/* Card front (revealed state) */
+.mem-card-front {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 2px solid #a7f3d0;
+  transform: rotateY(180deg);
+  box-shadow: 0 2px 8px rgba(16,185,129,.12);
+}
+
+.card-picture {
+  font-size: 2.2rem;
+  animation: popIn 0.2s ease 0.35s both;
+}
+
+/* Matched state overlay */
+.mem-card.is-matched .mem-card-front {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border-color: #34d399;
+  box-shadow: 0 0 0 3px rgba(52,211,153,.25), 0 2px 12px rgba(16,185,129,.18);
+}
+
+.mem-card.is-matched .card-picture {
+  filter: drop-shadow(0 0 6px rgba(16,185,129,.6));
+}
+
+/* Revealed-fail: cards shown on timeout that weren't matched */
+.mem-card.is-revealed-fail.is-flipped .mem-card-front {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border-color: #fca5a5;
+}
+
+.mem-card.is-revealed-fail .card-picture {
+  opacity: 0.6;
+}
+
+/* ── Footer / hint bar ── */
+.game-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hint-bar {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 1.25rem;
+  padding: 0.9rem 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  position: relative;
+}
+
+.hint-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.hint-sub {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0.2rem 0 0;
+}
+
+.hint-count {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #065f46;
+  white-space: nowrap;
+}
+
+/* Progress track (full width, below text) */
+.progress-track {
+  grid-column: 1 / -1;
+  height: 6px;
+  background: #f3f4f6;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Buttons ── */
+.restart-btn {
+  padding: 0.75rem 1.5rem;
+  background: #065f46;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 8px rgba(6,95,70,.25);
+  align-self: flex-end;
+}
+
+.restart-btn:hover {
+  background: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(6,95,70,.3);
+}
+
+.next-level-btn {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  box-shadow: 0 2px 8px rgba(180,83,9,.3);
+}
+
+.next-level-btn:hover {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 4px 12px rgba(180,83,9,.35);
+}
+
+.btn-loading {
+  opacity: 0.65;
+  cursor: wait;
+  background: #6b7280 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Footer buttons row */
+.game-footer > .restart-btn,
+.game-footer > .next-level-btn {
+  align-self: center;
+}
+
+/* When two buttons sit side by side */
+.game-footer {
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Make button row if multiple */
+.game-footer > button + button {
+  margin-top: 0;
+}
+
+/* Flex row for footer buttons */
+.footer-btn-row {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Loading / IRT indicator ── */
+.irt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #065f46;
+  background: #d1fae5;
+  border: 1px solid #6ee7b7;
+  border-radius: 99px;
+  padding: 0.25rem 0.75rem;
+}
+
+/* ── Animations ── */
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-bar {
+  from { opacity: 1; }
+  to   { opacity: 0.65; }
+}
+
+@keyframes pulse-text {
+  from { transform: scale(1); }
+  to   { transform: scale(1.06); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .game-header {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .patient-card { justify-self: stretch; }
+  .wooden-sign  { order: -1; }
+  .level-card   { justify-self: stretch; flex-direction: row; flex-wrap: wrap; }
+
+  .board {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .card-picture { font-size: 1.6rem; }
+
+  .restart-btn { width: 100%; text-align: center; align-self: stretch; }
+}
