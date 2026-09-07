@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
+import fs from "fs";
+import fsPromises from "fs/promises";
 import path from "path";
+import { loadStore } from "@/lib/irt";
 
 const SSH2026_DIR = path.resolve(process.cwd(), "..", "ssh-2026");
-const ABILITY_STATE_PATH = path.join(SSH2026_DIR, "ability_state.json");
 const ABILITY_HISTORY_PATH = path.join(SSH2026_DIR, "ability_history.json");
 
 const THETA_MIN = -3.0;
@@ -97,29 +98,20 @@ interface HistoryEntry {
 
 export async function GET() {
   try {
-    // 1. Read ability_state.json
-    let abilityState: Record<string, { theta: number }> = {};
-    try {
-      const rawState = await fs.readFile(ABILITY_STATE_PATH, "utf-8");
-      abilityState = JSON.parse(rawState);
-    } catch {
-      abilityState = {
-        memory: { theta: -0.788 },
-        attention: { theta: -0.034 },
-        daily_routine: { theta: 0.261 },
-        pattern_recognition: { theta: 2.231 },
-        emotional: { theta: 2.231 },
-      };
-    }
+    // 1. Read ability state (with automatic serverless fallback)
+    const abilityState = loadStore();
 
-    // 2. Read ability_history.json
+    // 2. Read ability_history.json if present
     let history: HistoryEntry[] = [];
     try {
-      const rawHistory = await fs.readFile(ABILITY_HISTORY_PATH, "utf-8");
-      history = JSON.parse(rawHistory);
+      if (fs.existsSync(ABILITY_HISTORY_PATH)) {
+        const rawHistory = await fsPromises.readFile(ABILITY_HISTORY_PATH, "utf-8");
+        history = JSON.parse(rawHistory);
+      }
     } catch {
       history = [];
     }
+
 
     // 3. Process each domain
     const domainsData = Object.entries(DOMAIN_CATALOG).map(([domainKey, meta]) => {

@@ -195,9 +195,11 @@ async def voice_turn(
     reply_audio_url = None
     try:
         await text_to_speech(clean_audio_text, voice, audio_path)
-        reply_audio_url = f"http://localhost:8001/audio/{audio_filename}"
+        public_url = os.getenv("VOICE_AGENT_PUBLIC_URL", "http://localhost:8001").rstrip("/")
+        reply_audio_url = f"{public_url}/audio/{audio_filename}"
     except Exception as tts_err:
         print("TTS note:", tts_err)
+
 
     return JSONResponse({
         "replyText": clean_audio_text if intent == "START_GAME" else reply_text,

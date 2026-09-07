@@ -1,6 +1,8 @@
+import os
 import requests
 
-BACKEND_URL = "http://127.0.0.1:8000/api"
+BACKEND_URL = os.getenv("DJANGO_BACKEND_URL", "http://127.0.0.1:8000/api").rstrip("/")
+
 
 # Set per request by server.py; falls back to auto-login for terminal testing
 _current_token = None

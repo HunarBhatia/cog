@@ -4,3 +4,6 @@ psycopg2-binary
 djangorestframework-simplejwt
 python-dotenv
 django-cors-headers
+gunicorn
+whitenoise
+dj-database-url
