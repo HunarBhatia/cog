@@ -8,32 +8,39 @@ export const WAKE_PHRASES = [
   "hello cog niva",
   "hey cog niva",
   "hi cog niva",
-  "cog niva",
   "hello cognitive",
   "hey cognitive",
-  "hello cogniba",
-  "hey cogniba",
-  "cogniba",
   "hello coniva",
   "hey coniva",
-  "coniva",
   "hello kogniva",
   "hey kogniva",
-  "kogniva",
-  "hello cognita",
-  "hey cognita",
   "namaste cogniva",
   "suno cogniva",
+  "wake up cogniva",
+  "कोग्निवा",
+  "कॉग्निवा",
+  "नमस्ते कोग्निवा",
+  "नमस्ते कॉग्निवा",
+  "सुनो कोग्निवा",
 ];
 
 export const SLEEP_PHRASES = [
+  "sleep",
+  "go to sleep",
+  "sleep now",
+  "sleep cogniva",
   "bye cogniva",
   "goodbye cogniva",
   "bye bye cogniva",
-  "sleep cogniva",
-  "go to sleep",
-  "turn off",
+  "bye",
+  "goodbye",
+  "bye bye",
   "stop listening",
+  "turn off",
+  "alvida",
+  "अलविदा",
+  "सो जाओ",
+  "चुप हो जाओ",
 ];
 
 export const DEFAULT_LOCALE = "en-US";
@@ -53,4 +60,3 @@ export const GAME_EVENTS_ENDPOINT =
 export const DEFAULT_GAME_ID = "memory-garden-match";
 
 export const DEFAULT_GAME_PATH = "/arcade/game";
-

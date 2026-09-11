@@ -68,114 +68,6 @@ interface AbilitiesData {
   lastUpdated: string;
 }
 
-const fallbackDomains: DomainAbility[] = [
-  {
-    key: "memory",
-    name: "Memory Recall",
-    category: "Short-term memory",
-    gameTitle: "Match the Pairs",
-    gameRoute: "/arcade/game",
-    accentColor: "text-emerald-700",
-    bgTone: "bg-emerald-50",
-    borderColor: "border-emerald-200",
-    theta: -0.79,
-    score: 37,
-    level: 4,
-    trajectory: "improving",
-    trajectoryLabel: "+3% this week",
-    delta: 3,
-    clinicalInsight: "Morning picture matching helps recall. Keep sessions under 5 minutes for best confidence.",
-  },
-  {
-    key: "attention",
-    name: "Focus & Attention",
-    category: "Reaction speed",
-    gameTitle: "Tap the Target",
-    gameRoute: "/arcade/tap-target",
-    accentColor: "text-amber-700",
-    bgTone: "bg-amber-50",
-    borderColor: "border-amber-200",
-    theta: -0.03,
-    score: 49,
-    level: 5,
-    trajectory: "stable",
-    trajectoryLabel: "Stable baseline",
-    delta: 0,
-    clinicalInsight: "Reaction time is steady and consistent across multiple rounds with minimal misses.",
-  },
-  {
-    key: "daily_routine",
-    name: "Daily Routine",
-    category: "Step-by-step tasks",
-    gameTitle: "Sequence the Task",
-    gameRoute: "/arcade/sequence-task",
-    accentColor: "text-orange-700",
-    bgTone: "bg-orange-50",
-    borderColor: "border-orange-200",
-    theta: 0.26,
-    score: 54,
-    level: 6,
-    trajectory: "improving",
-    trajectoryLabel: "+6% this week",
-    delta: 6,
-    clinicalInsight: "Noticeable confidence ordering morning rituals like brushing, tea, and breakfast.",
-  },
-  {
-    key: "pattern_recognition",
-    name: "Shapes & Art",
-    category: "Visual distinction",
-    gameTitle: "Art & Colors Tapestry",
-    gameRoute: "/arcade/game",
-    accentColor: "text-purple-700",
-    bgTone: "bg-purple-50",
-    borderColor: "border-purple-200",
-    theta: 2.23,
-    score: 87,
-    level: 9,
-    trajectory: "stable",
-    trajectoryLabel: "Strong pillar",
-    delta: 0,
-    clinicalInsight: "High confidence and joy distinguishing colors and textures. A great mood booster.",
-  },
-  {
-    key: "emotional",
-    name: "Mood & Well-being",
-    category: "Conversational ease",
-    gameTitle: "Voice Sanctuary",
-    gameRoute: "/",
-    accentColor: "text-rose-700",
-    bgTone: "bg-rose-50",
-    borderColor: "border-rose-200",
-    theta: 2.23,
-    score: 87,
-    level: 9,
-    trajectory: "stable",
-    trajectoryLabel: "Warm & positive",
-    delta: 0,
-    clinicalInsight: "Warm engagement with voice companion. Speaks comfortably and expresses feelings clearly.",
-  },
-];
-
-const fallbackGames = [
-  {
-    name: "Match the Pairs",
-    detail: "Today · Memory · Level 4",
-    score: "100%",
-    icon: "🧠",
-  },
-  {
-    name: "Sequence the Task",
-    detail: "Today · Daily Routine · Level 5",
-    score: "88%",
-    icon: "📋",
-  },
-  {
-    name: "Tap the Target",
-    detail: "Yesterday · Attention · Level 5",
-    score: "82%",
-    icon: "🎯",
-  },
-];
 
 export default function CaregiverPage() {
   const { user, token, isAuthenticated, logout } = useAuth();
@@ -239,8 +131,9 @@ export default function CaregiverPage() {
   };
 
   const patientName = user?.role === "patient" ? user.username : (user?.username || "Senior Patient");
-  const domains = abilitiesData?.domains ?? fallbackDomains;
-  const overallScore = abilitiesData?.overallScore ?? 63;
+  const domains = abilitiesData?.domains ?? [];
+  const overallScore = abilitiesData?.overallScore ?? null;
+  const hasAbilityData = domains.length > 0;
 
   return (
     <main className="min-h-screen bg-[#faf8f5] text-slate-800 antialiased pb-16">
@@ -316,12 +209,16 @@ export default function CaregiverPage() {
             </span>
             <div className="flex items-baseline justify-center gap-1 my-1">
               <span className="font-serif text-4xl font-extrabold text-white">
-                {overallScore}
+                {overallScore !== null ? overallScore : "—"}
               </span>
               <span className="text-sm font-semibold text-emerald-200">/ 100</span>
             </div>
             <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-200 bg-white/15 px-2.5 py-0.5 rounded-full">
-              <TrendingUp className="w-3.5 h-3.5" /> Steady Progress
+              {overallScore !== null ? (
+                <><TrendingUp className="w-3.5 h-3.5" /> Steady Progress</>
+              ) : (
+                <><Gamepad2 className="w-3.5 h-3.5" /> Play games to score</>
+              )}
             </span>
           </div>
         </section>
@@ -356,102 +253,119 @@ export default function CaregiverPage() {
                 </div>
               </div>
 
-              {/* 5 Domain List */}
+              {/* 5 Domain List or empty state */}
               <div className="mt-5 space-y-4">
-                {domains.map((dom) => {
-                  const scoreColor =
-                    dom.score >= 70
-                      ? "bg-emerald-500"
-                      : dom.score >= 45
-                      ? "bg-amber-500"
-                      : "bg-rose-500";
+                {hasAbilityData ? (
+                  domains.map((dom) => {
+                    const scoreColor =
+                      dom.score >= 70
+                        ? "bg-emerald-500"
+                        : dom.score >= 45
+                        ? "bg-amber-500"
+                        : "bg-rose-500";
 
-                  const badgeStyle =
-                    dom.score >= 70
-                      ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                      : dom.score >= 45
-                      ? "bg-amber-50 text-amber-800 border-amber-200"
-                      : "bg-rose-50 text-rose-800 border-rose-200";
+                    const badgeStyle =
+                      dom.score >= 70
+                        ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                        : dom.score >= 45
+                        ? "bg-amber-50 text-amber-800 border-amber-200"
+                        : "bg-rose-50 text-rose-800 border-rose-200";
 
-                  return (
-                    <div
-                      key={dom.key}
-                      className="rounded-2xl border border-stone-200/90 bg-stone-50/40 p-4 sm:p-5 hover:bg-stone-50 transition-colors"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <span className="text-2xl shrink-0">
-                            {dom.key === "memory"
-                              ? "🧠"
-                              : dom.key === "attention"
-                              ? "🎯"
-                              : dom.key === "daily_routine"
-                              ? "📋"
-                              : dom.key === "pattern_recognition"
-                              ? "🎨"
-                              : "💚"}
-                          </span>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="font-bold text-base text-slate-900">
-                                {dom.name}
-                              </h3>
-                              <span
-                                className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${badgeStyle}`}
-                              >
-                                {dom.trajectoryLabel}
-                              </span>
-                            </div>
-                            <p className="text-xs text-slate-500 mt-0.5">
-                              {dom.category} • Playing at Level {dom.level} of 10
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Score Number & Link */}
-                        <div className="flex items-center gap-3 shrink-0">
-                          <div className="text-right">
-                            <span className="font-serif text-2xl font-bold text-slate-900">
-                              {dom.score}
+                    return (
+                      <div
+                        key={dom.key}
+                        className="rounded-2xl border border-stone-200/90 bg-stone-50/40 p-4 sm:p-5 hover:bg-stone-50 transition-colors"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <span className="text-2xl shrink-0">
+                              {dom.key === "memory"
+                                ? "🧠"
+                                : dom.key === "attention"
+                                ? "🎯"
+                                : dom.key === "daily_routine"
+                                ? "📋"
+                                : dom.key === "pattern_recognition"
+                                ? "🎨"
+                                : "💚"}
                             </span>
-                            <span className="text-xs font-semibold text-slate-400">/100</span>
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className="font-bold text-base text-slate-900">
+                                  {dom.name}
+                                </h3>
+                                <span
+                                  className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${badgeStyle}`}
+                                >
+                                  {dom.trajectoryLabel}
+                                </span>
+                              </div>
+                              <p className="text-xs text-slate-500 mt-0.5">
+                                {dom.category} • Playing at Level {dom.level} of 10
+                              </p>
+                            </div>
                           </div>
 
-                          <Link
-                            href={dom.gameRoute}
-                            className="p-2 bg-white hover:bg-stone-100 text-slate-700 rounded-xl border border-stone-200 shadow-2xs transition-colors"
-                            title={`Play ${dom.gameTitle}`}
-                          >
-                            <Play className="h-3.5 w-3.5 fill-slate-700" />
-                          </Link>
-                        </div>
-                      </div>
+                          {/* Score Number & Link */}
+                          <div className="flex items-center gap-3 shrink-0">
+                            <div className="text-right">
+                              <span className="font-serif text-2xl font-bold text-slate-900">
+                                {dom.score}
+                              </span>
+                              <span className="text-xs font-semibold text-slate-400">/100</span>
+                            </div>
 
-                      {/* Clean Progress Bar */}
-                      <div className="mt-3.5">
-                        <div className="h-2 w-full bg-stone-200 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all duration-500 ${scoreColor}`}
-                            style={{ width: `${dom.score}%` }}
-                          />
+                            <Link
+                              href={dom.gameRoute}
+                              className="p-2 bg-white hover:bg-stone-100 text-slate-700 rounded-xl border border-stone-200 shadow-2xs transition-colors"
+                              title={`Play ${dom.gameTitle}`}
+                            >
+                              <Play className="h-3.5 w-3.5 fill-slate-700" />
+                            </Link>
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Friendly Care Tip */}
-                      <p className="mt-3 text-xs text-slate-600 flex items-start gap-1.5 leading-relaxed bg-white/70 p-2.5 rounded-xl border border-stone-200/60">
-                        <Sparkles className="w-3.5 h-3.5 text-emerald-700 shrink-0 mt-0.5" />
-                        <span>
-                          <strong className="text-slate-800">Care tip: </strong>
-                          {dom.clinicalInsight}
-                        </span>
-                      </p>
-                    </div>
-                  );
-                })}
+                        {/* Clean Progress Bar */}
+                        <div className="mt-3.5">
+                          <div className="h-2 w-full bg-stone-200 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-500 ${scoreColor}`}
+                              style={{ width: `${dom.score}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Friendly Care Tip */}
+                        <p className="mt-3 text-xs text-slate-600 flex items-start gap-1.5 leading-relaxed bg-white/70 p-2.5 rounded-xl border border-stone-200/60">
+                          <Sparkles className="w-3.5 h-3.5 text-emerald-700 shrink-0 mt-0.5" />
+                          <span>
+                            <strong className="text-slate-800">Care tip: </strong>
+                            {dom.clinicalInsight}
+                          </span>
+                        </p>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="py-10 text-center rounded-2xl border border-dashed border-stone-300 bg-stone-50/50">
+                    <span className="text-4xl mb-3 block">🎮</span>
+                    <p className="font-bold text-slate-700 text-base">No game data yet</p>
+                    <p className="text-sm text-slate-500 mt-1 max-w-xs mx-auto">
+                      Play arcade games to automatically track cognitive ability scores here.
+                    </p>
+                    <Link
+                      href="/arcade"
+                      className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 bg-emerald-700 text-white rounded-xl text-xs font-bold hover:bg-emerald-800 transition-colors"
+                    >
+                      <Gamepad2 className="w-4 h-4" /> Open Arcade
+                    </Link>
+                  </div>
+                )}
               </div>
             </section>
 
             {/* 2. Progress vs. Decline Summary */}
+
             <section className="rounded-3xl border border-stone-200/90 bg-white p-6 sm:p-8 shadow-xs">
               <h2 className="font-serif text-2xl font-bold text-slate-900">
                 Progress vs. Decline at a Glance
@@ -544,31 +458,34 @@ export default function CaregiverPage() {
               </div>
 
               <div className="divide-y divide-stone-100">
-                {(gameLogs.length > 0
-                  ? gameLogs.slice(0, 4).map((log) => ({
-                      name: log.game_type.replace(/_/g, " "),
-                      detail: `${new Date(log.played_at).toLocaleDateString()} · Difficulty: ${log.difficulty}`,
-                      score: `${log.score} pts`,
-                      icon: "🎮",
-                    }))
-                  : fallbackGames
-                ).map((g, i) => (
-                  <div key={i} className="py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{g.icon}</span>
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-800 capitalize">
-                          {g.name}
-                        </h4>
-                        <p className="text-xs text-slate-500">{g.detail}</p>
+                {gameLogs.length > 0 ? (
+                  gameLogs.slice(0, 4).map((log, i) => (
+                    <div key={i} className="py-3 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">🎮</span>
+                        <div>
+                          <h4 className="font-bold text-sm text-slate-800 capitalize">
+                            {log.game_type.replace(/_/g, " ")}
+                          </h4>
+                          <p className="text-xs text-slate-500">
+                            {new Date(log.played_at).toLocaleDateString()} · Difficulty: {log.difficulty}
+                          </p>
+                        </div>
                       </div>
+                      <span className="font-serif font-bold text-base text-[#184735]">
+                        {log.score} pts
+                      </span>
                     </div>
-                    <span className="font-serif font-bold text-base text-[#184735]">
-                      {g.score}
-                    </span>
+                  ))
+                ) : (
+                  <div className="py-8 text-center">
+                    <span className="text-3xl mb-2 block">🎯</span>
+                    <p className="text-sm font-semibold text-slate-600">No games played yet</p>
+                    <p className="text-xs text-slate-400 mt-1">Activity will appear here after the first game session.</p>
                   </div>
-                ))}
+                )}
               </div>
+
             </section>
           </div>
 

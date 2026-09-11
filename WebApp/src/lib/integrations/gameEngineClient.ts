@@ -1,12 +1,24 @@
 import { DEFAULT_GAME_PATH, GAME_EVENTS_ENDPOINT, GAME_LAUNCH_ENDPOINT } from "./config";
 import type { GameLaunchRequest, GameLaunchResponse } from "./contracts";
 
+const GAME_PATHS: Record<string, string> = {
+  "memory-garden-match": "/arcade/game",
+  "match-the-pairs": "/arcade/game",
+  "match-pairs": "/arcade/game",
+  "sequence-the-task": "/arcade/sequence-task",
+  "sequence-task": "/arcade/sequence-task",
+  "tap-the-target": "/arcade/tap-target",
+  "tap-target": "/arcade/tap-target",
+};
+
 export async function launchGame(request: GameLaunchRequest): Promise<GameLaunchResponse> {
+  const targetPath = (request.gameId && GAME_PATHS[request.gameId]) || DEFAULT_GAME_PATH;
+
   if (!GAME_LAUNCH_ENDPOINT) {
     return {
       gameId: request.gameId,
       sessionId: request.sessionId,
-      launchPath: DEFAULT_GAME_PATH,
+      launchPath: targetPath,
       autostart: true,
     };
   }
@@ -23,7 +35,11 @@ export async function launchGame(request: GameLaunchRequest): Promise<GameLaunch
     throw new Error(`Game launch request failed with ${response.status}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  return {
+    ...data,
+    launchPath: data.launchPath || targetPath,
+  };
 }
 
 export async function sendGameEvent(eventName: string, payload: Record<string, unknown>) {
@@ -45,4 +61,3 @@ export async function sendGameEvent(eventName: string, payload: Record<string, u
 }
 
 export { postGameScore } from "./dashboardClient";
-

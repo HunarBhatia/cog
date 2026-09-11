@@ -25,14 +25,17 @@ export function normalizeScore(score: number): number {
   return Math.max(0.0, Math.min(1.0, score / 100.0));
 }
 
-// In-memory cache as fallback for serverless environments (Vercel)
-const inMemoryStore: Record<string, { theta: number }> = {
-  memory: { theta: -0.788 },
-  attention: { theta: -0.034 },
-  daily_routine: { theta: 0.261 },
-  pattern_recognition: { theta: 2.231 },
-  emotional: { theta: 2.231 },
+// Default neutral starting state — all domains begin at theta = 0.0
+const DEFAULT_STORE: Record<string, { theta: number }> = {
+  memory: { theta: 0.0 },
+  attention: { theta: 0.0 },
+  daily_routine: { theta: 0.0 },
+  pattern_recognition: { theta: 0.0 },
+  emotional: { theta: 0.0 },
 };
+
+// In-memory cache as fallback for serverless environments (Vercel)
+const inMemoryStore: Record<string, { theta: number }> = { ...DEFAULT_STORE };
 
 function getStoreFilePath(): string | null {
   try {
@@ -69,6 +72,30 @@ export function saveStore(store: Record<string, { theta: number }>): void {
       fs.writeFileSync(filePath, JSON.stringify(store, null, 2), "utf-8");
     } catch {
       // Ignore in read-only / serverless environment
+    }
+  }
+}
+
+/**
+ * Resets all domain ability scores to neutral defaults (theta = 0.0).
+ * Called when a new account is registered so each user starts fresh.
+ */
+export function resetStore(): void {
+  // Reset in-memory store to fresh defaults
+  for (const domain of Object.keys(inMemoryStore)) {
+    inMemoryStore[domain] = { theta: 0.0 };
+  }
+  // Ensure all 5 domains are present
+  for (const domain of Object.keys(DEFAULT_STORE)) {
+    inMemoryStore[domain] = { theta: 0.0 };
+  }
+  // Persist to disk if available
+  const filePath = getStoreFilePath();
+  if (filePath) {
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(DEFAULT_STORE, null, 2), "utf-8");
+    } catch {
+      // Ignore in serverless
     }
   }
 }

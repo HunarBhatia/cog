@@ -52,9 +52,60 @@ function normalizeForMatching(text: string): { clean: string; unified: string } 
     .replace(/\bcorn\s+iva\b/g, "cogniva")
     .replace(/\bconniva\b/g, "cogniva")
     .replace(/\bconiva\b/g, "cogniva")
-    .replace(/\bkaniva\b/g, "cogniva");
+    .replace(/\bkaniva\b/g, "cogniva")
+    .replace(/\b(hello|hey|hi|ok|okay)\s+(?:cognitive|cogniba|cognita)\b/g, "$1 cogniva")
+    .replace(/\bcall\s+niva\b/g, "cogniva");
 
   return { clean, unified };
+}
+
+function matchesWakePhrase(rawText: string): { matched: boolean; phrase: string; subsequent: string } {
+  if (!rawText || !rawText.trim()) return { matched: false, phrase: "", subsequent: "" };
+
+  const { clean, unified } = normalizeForMatching(rawText);
+
+  for (const phrase of WAKE_PHRASES) {
+    const normPhrase = phrase.toLowerCase().replace(/[^a-z0-9\u0900-\u097F\s]/g, " ").trim();
+    if (!normPhrase) continue;
+
+    const escaped = normPhrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+    const regex = new RegExp(`(?:^|\\s)${escaped}(?:\\s|$)`, "i");
+
+    let match = unified.match(regex);
+    let targetStr = unified;
+    if (!match) {
+      match = clean.match(regex);
+      targetStr = clean;
+    }
+
+    if (match && match.index !== undefined) {
+      const matchStart = match.index + (match[0].startsWith(" ") ? 1 : 0);
+      const matchedLen = normPhrase.length;
+      const subsequent = targetStr.slice(matchStart + matchedLen).trim();
+      return { matched: true, phrase, subsequent };
+    }
+  }
+
+  return { matched: false, phrase: "", subsequent: "" };
+}
+
+function matchesSleepPhrase(rawText: string): boolean {
+  if (!rawText || !rawText.trim()) return false;
+  const { clean, unified } = normalizeForMatching(rawText);
+
+  for (const phrase of SLEEP_PHRASES) {
+    const normPhrase = phrase.toLowerCase().replace(/[^a-z0-9\u0900-\u097F\s]/g, " ").trim();
+    if (!normPhrase) continue;
+
+    const escaped = normPhrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+    const regex = new RegExp(`(?:^|\\s)${escaped}(?:\\s|$)`, "i");
+
+    if (regex.test(unified) || regex.test(clean) || regex.test(rawText.toLowerCase())) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export function VoiceMascot() {
@@ -76,6 +127,8 @@ export function VoiceMascot() {
       sessionIdRef.current = user.username;
     }
   }, [user]);
+
+  const currentAudioRef = useRef<HTMLAudioElement | null>(null);
   const wakeRecognitionRef = useRef<any>(null);
   const turnRecognitionRef = useRef<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -90,6 +143,31 @@ export function VoiceMascot() {
   const isMountedRef = useRef(false);
 
   const isHiddenRoute = pathname === "/sign-in";
+
+  // Restart the wake word listener whenever auth state changes (login / register).
+  // Without this, the listener may be initialized before the token/user is hydrated
+  // causing it to silently fail after sign-up or sign-in redirects.
+  useEffect(() => {
+    // Stop any existing wake recognition and re-launch with updated auth context
+    if (wakeRecognitionRef.current) {
+      try {
+        wakeRecognitionRef.current.onresult = null;
+        wakeRecognitionRef.current.onerror = null;
+        wakeRecognitionRef.current.onend = null;
+        wakeRecognitionRef.current.stop();
+      } catch (_) {}
+      wakeRecognitionRef.current = null;
+    }
+    // Delay slightly to let navigation settle after login/register redirect
+    const t = setTimeout(() => {
+      if (isMountedRef.current && !isTurnActiveRef.current && !isHiddenRoute) {
+        startWakeWordListenerRef.current();
+      }
+    }, 800);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, user?.username, isHiddenRoute]);
+
   const botState: BotState = useMemo(() => {
     if (voiceStatus === "wake-listening" || voiceStatus === "listening") return "listen";
     if (voiceStatus === "thinking") return "think";
@@ -132,6 +210,14 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
 
   const speakUtterance = useCallback((text: string, audioUrl?: string, langCode?: string) => {
     return new Promise<void>((resolve) => {
+      // Pause any ongoing speech or audio
+      if (currentAudioRef.current) {
+        try {
+          currentAudioRef.current.pause();
+          currentAudioRef.current = null;
+        } catch (_) {}
+      }
+
       const fallbackTTS = () => {
         if (typeof window === "undefined" || !("speechSynthesis" in window)) {
           resolve();
@@ -163,19 +249,27 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
       if (audioUrl) {
         try {
           const audio = new Audio(audioUrl);
-          audio.onended = () => resolve();
-          audio.onerror = () => {
-            console.warn("Corner mascot audio URL playback failed, falling back to browser TTS");
+          currentAudioRef.current = audio;
+          audio.preload = "auto";
+          audio.onended = () => {
+            currentAudioRef.current = null;
+            resolve();
+          };
+          audio.onerror = (err) => {
+            console.warn("Corner mascot audio URL playback error, falling back to browser TTS:", err);
+            currentAudioRef.current = null;
             fallbackTTS();
           };
           const playPromise = audio.play();
           if (playPromise !== undefined) {
             playPromise.catch((err) => {
               console.warn("Corner mascot audio play() blocked, falling back to browser TTS:", err);
+              currentAudioRef.current = null;
               fallbackTTS();
             });
           }
         } catch (e) {
+          currentAudioRef.current = null;
           fallbackTTS();
         }
         return;
@@ -279,17 +373,27 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
     stopRecognition(turnRecognitionRef);
     stopTurnRecording();
 
+    if (currentAudioRef.current) {
+      try {
+        currentAudioRef.current.pause();
+        currentAudioRef.current = null;
+      } catch (_) {}
+    }
+
     setVoiceStatus("speaking");
-    const sleepResponse = "Goodbye! Going to sleep now. Just say 'hello cogniva' whenever you need me.";
+    const isHindi = user?.preferred_language === "hi";
+    const sleepResponse = isHindi
+      ? "अलविदा! मैं विश्राम कर रहा हूँ। जब भी ज़रूरत हो, बस 'hello cogniva' कहिए।"
+      : "Goodbye! Going to sleep now. Just say 'hello cogniva' whenever you need me.";
     setAgentResponse(sleepResponse);
-    await speakUtterance(sleepResponse, undefined, "en");
+    await speakUtterance(sleepResponse, undefined, isHindi ? "hi" : "en");
 
     setIsVoiceAgentActive(false);
     setVoiceStatus("wake-listening");
     setSpeechTranscript("");
     setAgentResponse("");
     startWakeWordListenerRef.current();
-  }, [speakUtterance, stopRecognition, stopTurnRecording]);
+  }, [speakUtterance, stopRecognition, stopTurnRecording, user?.preferred_language]);
   handleSleepCommandRef.current = handleSleepCommand;
 
   const finishVoiceTurn = useCallback(
@@ -309,16 +413,19 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
       stopRecognition(turnRecognitionRef);
 
       const transcript = (overrideTranscript ?? transcriptRef.current ?? "").trim();
-      const { clean: cleanSleep, unified: unifiedSleep } = normalizeForMatching(transcript);
-      if (
-        SLEEP_PHRASES.some(
-          (p) =>
-            cleanSleep.includes(p) ||
-            unifiedSleep.includes(p) ||
-            transcript.toLowerCase().includes(p)
-        )
-      ) {
+      if (matchesSleepPhrase(transcript)) {
         await handleSleepCommand();
+        return;
+      }
+
+      // If user remained silent and did not speak, cleanly return to wake-listening mode
+      if (!transcript && (!audioChunksRef.current || audioChunksRef.current.length === 0)) {
+        stopTurnRecording();
+        setIsVoiceAgentActive(false);
+        setVoiceStatus("wake-listening");
+        setSpeechTranscript("");
+        setAgentResponse("");
+        startWakeWordListenerRef.current();
         return;
       }
 
@@ -366,7 +473,7 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
         setAgentResponse("I could not reach the voice engine. Please try again in a moment.");
       }
     },
-    [isWelcome, pathname, routeToGame, speakUtterance, stopRecognition, stopTurnRecording, token, user]
+    [handleSleepCommand, isWelcome, pathname, routeToGame, speakUtterance, stopRecognition, stopTurnRecording, token, user]
   );
   finishVoiceTurnRef.current = finishVoiceTurn;
 
@@ -379,6 +486,12 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
 
       if (typeof window !== "undefined" && "speechSynthesis" in window) {
         window.speechSynthesis.cancel();
+      }
+      if (currentAudioRef.current) {
+        try {
+          currentAudioRef.current.pause();
+          currentAudioRef.current = null;
+        } catch (_) {}
       }
 
       if (silenceTimerRef.current) {
@@ -401,12 +514,23 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
 
       await startTurnRecording();
 
-      // Prompt silence timer: if no words detected in 5.5s, submit turn to answer promptly
+      // If user remains silent without saying any words for 9 seconds, close turn cleanly
       silenceTimerRef.current = setTimeout(() => {
         if (isTurnActiveRef.current) {
-          finishVoiceTurn(transcriptRef.current || "");
+          if (transcriptRef.current && transcriptRef.current.trim().length > 0) {
+            finishVoiceTurn(transcriptRef.current);
+          } else {
+            // Do NOT submit a fake empty turn; gently return to wake-listening
+            setIsVoiceAgentActive(false);
+            setVoiceStatus("wake-listening");
+            setSpeechTranscript("");
+            setAgentResponse("");
+            stopTurnRecording();
+            stopRecognition(turnRecognitionRef);
+            startWakeWordListenerRef.current();
+          }
         }
-      }, 5500);
+      }, 9000);
 
       const SpeechRecognition = getSpeechRecognition();
 
@@ -449,16 +573,8 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
           transcriptRef.current = combinedTranscript;
           setSpeechTranscript(combinedTranscript);
 
-          // Check if user uttered sleep phrase ("bye cogniva")
-          const { clean: cleanSleep, unified: unifiedSleep } = normalizeForMatching(combinedTranscript);
-          if (
-            SLEEP_PHRASES.some(
-              (phrase) =>
-                cleanSleep.includes(phrase) ||
-                unifiedSleep.includes(phrase) ||
-                combinedTranscript.toLowerCase().includes(phrase)
-            )
-          ) {
+          // Check if user uttered sleep phrase ("bye cogniva", "sleep", etc.)
+          if (matchesSleepPhrase(combinedTranscript)) {
             if (silenceTimerRef.current) {
               clearTimeout(silenceTimerRef.current);
               silenceTimerRef.current = null;
@@ -565,40 +681,26 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
     };
 
     recognition.onresult = (event: any) => {
-      // Gather speech across current result alternatives
-      let currentBatch = "";
+      // Evaluate incoming speech results with strict whole-word wake phrase matching
       for (let index = event.resultIndex; index < event.results.length; index += 1) {
-        for (let alt = 0; alt < event.results[index].length; alt++) {
-          currentBatch += " " + event.results[index][alt].transcript;
-        }
-      }
+        const item = event.results[index];
+        if (!item) continue;
 
-      // Also gather cumulative recent window so words across boundaries are caught
-      let recentWindow = "";
-      for (let i = Math.max(0, event.results.length - 4); i < event.results.length; i++) {
-        for (let alt = 0; alt < Math.min(2, event.results[i].length); alt++) {
-          recentWindow += " " + event.results[i][alt].transcript;
-        }
-      }
+        const maxAlts = Math.min(2, item.length);
+        for (let alt = 0; alt < maxAlts; alt++) {
+          const rawText = item[alt]?.transcript || "";
+          if (!rawText.trim()) continue;
 
-      const textCandidates = [currentBatch, recentWindow];
-
-      for (const rawText of textCandidates) {
-        if (!rawText.trim()) continue;
-        const { clean, unified } = normalizeForMatching(rawText);
-
-        for (const phrase of WAKE_PHRASES) {
-          const normPhrase = phrase.toLowerCase().replace(/[^a-z0-9\s]/g, " ").trim();
-          let matchIdx = unified.lastIndexOf(normPhrase);
-          if (matchIdx === -1) {
-            matchIdx = clean.lastIndexOf(normPhrase);
-          }
-
-          if (matchIdx !== -1) {
-            console.log(`[Cogniva Wake Word] Heard: "${rawText.trim()}" -> Waking up on phrase: "${phrase}"`);
-            const matchedLen = normPhrase.length;
-            const subsequentUtterance = clean.slice(matchIdx + matchedLen).trim();
-            startVoiceAgent(subsequentUtterance);
+          const { matched, phrase, subsequent } = matchesWakePhrase(rawText);
+          if (matched) {
+            console.log(`[Cogniva Wake Word] Heard: "${rawText.trim()}" -> Waking up on intentional phrase: "${phrase}"`);
+            confetti({
+              particleCount: 15,
+              spread: 40,
+              origin: isWelcome ? { y: 0.5, x: 0.5 } : { y: 0.85, x: 0.88 },
+              colors: ["#10b981", "#6366f1"],
+            });
+            startVoiceAgent(subsequent);
             return;
           }
         }
@@ -623,7 +725,17 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
         return;
       }
 
-      restartWakeTimerRef.current = setTimeout(startWakeWordListener, 600);
+      if (restartWakeTimerRef.current) clearTimeout(restartWakeTimerRef.current);
+      restartWakeTimerRef.current = setTimeout(() => {
+        if (
+          isMountedRef.current &&
+          !isTurnActiveRef.current &&
+          !isHiddenRoute &&
+          !wakeRecognitionRef.current
+        ) {
+          startWakeWordListenerRef.current();
+        }
+      }, 400);
     };
 
     try {
@@ -632,7 +744,7 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
       console.debug("Wake recognition start failed:", error);
       wakeRecognitionRef.current = null;
     }
-  }, [isHiddenRoute, startVoiceAgent, user?.preferred_language]);
+  }, [isHiddenRoute, isWelcome, startVoiceAgent, user?.preferred_language]);
 
   useEffect(() => {
     const handleExternalVoice = (event: any) => {
@@ -716,6 +828,12 @@ function anyUnicodeRange(str: string, start: number, end: number): boolean {
 
   const closeVoiceAgent = (event?: React.MouseEvent) => {
     if (event) event.stopPropagation();
+    if (currentAudioRef.current) {
+      try {
+        currentAudioRef.current.pause();
+        currentAudioRef.current = null;
+      } catch (_) {}
+    }
     isTurnActiveRef.current = false;
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     if (maxTurnTimerRef.current) clearTimeout(maxTurnTimerRef.current);
