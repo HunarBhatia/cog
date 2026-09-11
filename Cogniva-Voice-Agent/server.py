@@ -2,8 +2,9 @@ import os
 import re
 import uuid
 from fastapi import FastAPI, UploadFile, Form
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
 
@@ -15,8 +16,6 @@ from extractor import extract_and_save
 app = FastAPI()
 executor = ThreadPoolExecutor(max_workers=4)
 
-from fastapi.middleware.cors import CORSMiddleware
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,7 +25,6 @@ app.add_middleware(
 )
 
 os.makedirs("audio_out", exist_ok=True)
-app.mount("/audio", StaticFiles(directory="audio_out"), name="audio")
 
 VOICE_MAP = {
     "hi": "hi-IN-SwaraNeural",
@@ -82,6 +80,24 @@ def detect_language(text: str, fallback_lang: str = "en") -> str:
     return fallback_lang
 
 
+@app.api_route("/audio/{filename}", methods=["GET", "HEAD", "OPTIONS"])
+async def get_audio_file(filename: str):
+    """Serve synthesized voice responses with explicit CORS headers for browser audio playback."""
+    file_path = os.path.join("audio_out", filename)
+    if not os.path.exists(file_path):
+        return JSONResponse({"error": "Audio file not found"}, status_code=404)
+    return FileResponse(
+        file_path,
+        media_type="audio/mpeg",
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+            "Cache-Control": "public, max-age=3600",
+        },
+    )
+
+
 @app.post("/voice-turn")
 async def voice_turn(
     transcript: str = Form(""),
@@ -95,15 +111,15 @@ async def voice_turn(
     from tools.session import set_token
     set_token(token)
 
-    # 1. Determine the best transcript & auto-detect language
     final_transcript = (transcript or "").strip()
-    detected_lang = detect_language(final_transcript, fallback_lang="en" if not locale.startswith("hi") else "hi")
+    detected_lang = detect_language(final_transcript, fallback_lang="en" if not (locale and locale.startswith("hi")) else "hi")
 
+    # 1. Process uploaded audio with Whisper STT if provided
     if audio is not None:
         temp_path = f"audio_out/in_{uuid.uuid4().hex}.webm"
         try:
             content = await audio.read()
-            if content and len(content) > 200:
+            if content and len(content) > 300:
                 with open(temp_path, "wb") as f:
                     f.write(content)
                 # Auto-detect language using Whisper with verbose_json
@@ -123,19 +139,13 @@ async def voice_turn(
                 except Exception:
                     pass
 
-    # If transcript is still empty, default to welcoming prompt in the detected language
+    # If transcript is empty (user didn't say anything or spoke too softly)
     if not final_transcript:
         final_transcript = "नमस्ते" if detected_lang == "hi" else "Hello"
 
     config = {"configurable": {"thread_id": session_id}}
 
-    # 2. Extract facts asynchronously
-    try:
-        executor.submit(extract_and_save, session_id, final_transcript)
-    except Exception as e:
-        print("Fact extraction note:", e)
-
-    # 3. Invoke Supervisor Agent with same-language guarantee
+    # 2. Invoke Supervisor Agent
     reply_text = ""
     messages_log = []
     try:
@@ -144,7 +154,7 @@ async def voice_turn(
             {"messages": [("user", f"[session_id: {session_id}, language: {detected_lang}] {final_transcript}")]},
             config,
         )
-        result = reply_future.result(timeout=12)
+        result = reply_future.result(timeout=15)
         if result and "messages" in result and result["messages"]:
             messages_log = result["messages"]
             last_content = result["messages"][-1].content
@@ -169,21 +179,43 @@ async def voice_turn(
         else:
             reply_text = "I am right here with you, dear. I am listening with all my warmth and care."
 
-    # 4. Check for Game Routing Intent
+    # 3. Extract facts and reminders from the FULL conversation turn
+    try:
+        executor.submit(extract_and_save, session_id, final_transcript, reply_text)
+    except Exception as e:
+        print("Fact extraction note:", e)
+
+    # 4. Check for Game Routing Intent & Game Selection
     intent = "CHAT"
     game_command = None
-    if "[ROUTED_TO_GAME" in reply_text or any(
-        "route_to_game" in str(m) for m in messages_log
-    ):
+    routed_match = re.search(r"\[ROUTED_TO_GAME:([a-zA-Z0-9_-]+)\]", reply_text)
+    if routed_match:
+        chosen_game = routed_match.group(1).strip()
         intent = "START_GAME"
         game_command = {
             "action": "START_GAME",
-            "gameId": "memory-garden-match",
+            "gameId": chosen_game,
+            "source": "voice",
+            "transcript": final_transcript,
+        }
+    elif any("route_to_game" in str(m) for m in messages_log):
+        chosen_game = "memory-garden-match"
+        for m in messages_log:
+            tool_calls = getattr(m, "tool_calls", None)
+            if tool_calls:
+                for tc in tool_calls:
+                    if tc.get("name") == "route_to_game":
+                        chosen_game = tc.get("args", {}).get("game_type", "memory-garden-match")
+                        break
+        intent = "START_GAME"
+        game_command = {
+            "action": "START_GAME",
+            "gameId": chosen_game,
             "source": "voice",
             "transcript": final_transcript,
         }
 
-    # 5. Determine exact response language from reply and synthesize matching TTS
+    # 5. Determine exact response language from reply and synthesize TTS
     reply_lang = detect_language(reply_text, fallback_lang=detected_lang)
     clean_audio_text = re.sub(r"\[.*?\]", "", reply_text).strip()
     if not clean_audio_text:
@@ -200,11 +232,10 @@ async def voice_turn(
     except Exception as tts_err:
         print("TTS note:", tts_err)
 
-
     return JSONResponse({
         "replyText": clean_audio_text if intent == "START_GAME" else reply_text,
         "replyAudioUrl": reply_audio_url,
         "language": reply_lang,
         "intent": intent,
         "gameCommand": game_command,
-    })  
+    })

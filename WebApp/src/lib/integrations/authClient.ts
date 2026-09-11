@@ -81,13 +81,20 @@ function parseJwtPayload(token: string): Record<string, unknown> | null {
 }
 
 export async function registerUser(payload: RegisterPayload): Promise<AuthState> {
-  const response = await fetch(`${DJANGO_API_URL}/register/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${DJANGO_API_URL}/register/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (err: any) {
+    throw new Error(
+      `Unable to connect to authentication server at ${DJANGO_API_URL}. Please ensure the backend is running.`
+    );
+  }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
@@ -113,17 +120,33 @@ export async function registerUser(payload: RegisterPayload): Promise<AuthState>
   };
 
   saveStoredAuth(authState);
+
+  // Reset IRT ability scores so every new account starts at a neutral baseline.
+  // This ensures the caregiver dashboard shows clean data, not a previous user's scores.
+  try {
+    await fetch("/api/irt/reset", { method: "POST" });
+  } catch {
+    // Non-critical — IRT reset failure should not block registration
+  }
+
   return authState;
 }
 
 export async function loginUser(payload: LoginPayload): Promise<AuthState> {
-  const response = await fetch(`${DJANGO_API_URL}/login/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${DJANGO_API_URL}/login/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (err: any) {
+    throw new Error(
+      `Unable to connect to authentication server at ${DJANGO_API_URL}. Please ensure the backend is running.`
+    );
+  }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null);
